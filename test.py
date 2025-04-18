@@ -1,19 +1,9 @@
-import os
-from groq import Groq
-from config import GROQ_API_KEY
+from config import GROQ_API_KEY, SUPABASE_URL, SUPABASE_KEY
+from supabase import create_client, Client
 
-client = Groq(
-    api_key=os.environ.get("GROQ_API_KEY"),
-)
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+user_id = "b1334885-5510-4897-a0fa-a38df2cc7e96"
 
-chat_completion = client.chat.completions.create(
-    messages=[
-        {
-            "role": "system",
-            "content": "You're an expert assistant that summarizes text. You'll be given a transcript of a video and you'll summarize it. Get the key points of the video and return them in a proper format (Introduction, body conclusion). Use bullets and examples if you need to. ",
-        }
-    ],
-    model="llama-3.3-70b-versatile",
-)
-
-print(chat_completion.choices[0].message.content)
+# Fetch user profile
+response = supabase.table("user_profiles").select("*").eq("id", user_id).execute()
+print(response)
